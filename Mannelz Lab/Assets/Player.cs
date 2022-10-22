@@ -7,11 +7,13 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float speed;
     private float speedRun;
+
     private float horizontal;
+    private Vector2 velocidadeAtual;
 
     private Rigidbody2D rb;
 
-    void Start()
+    void Awake()
     {
         speed = 5;
         speedRun = speed * 1.95f;
@@ -21,7 +23,7 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        
+
     }
 
     void FixedUpdate()
@@ -33,6 +35,9 @@ public class Player : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
 
+        #region Mover com velocity
+        
+        /*
         if(Input.GetKey(KeyCode.LeftShift))
         {
             // Correr
@@ -44,6 +49,44 @@ public class Player : MonoBehaviour
             // Andar
 
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+        }
+        */
+
+        #endregion
+
+        velocidadeAtual = rb.velocity;
+
+        // Desacelerar
+        if(horizontal == 0f)
+        {
+            rb.velocity = new Vector2(Mathf.Lerp(velocidadeAtual.x, 0f, 1f), rb.velocity.y);
+        }
+
+        if(Input.GetKey(KeyCode.LeftShift))
+        {
+            // Correr
+
+            if(Mathf.Abs(velocidadeAtual.x) <= speedRun)
+            {
+                rb.AddForce(new Vector2(horizontal * speedRun, rb.velocity.y), ForceMode2D.Force);
+            }
+            else
+            {
+                rb.velocity = new Vector2(horizontal * speedRun, rb.velocity.y);
+            }
+        }
+        else
+        {
+            // Andar
+
+            if(Mathf.Abs(velocidadeAtual.x) <= speed)
+            {
+                rb.AddForce(new Vector2(horizontal * speed, rb.velocity.y), ForceMode2D.Force);
+            }
+            else
+            {
+                rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+            }
         }
     }
 }
