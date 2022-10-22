@@ -37,7 +37,6 @@ public class Player : MonoBehaviour
 
         #region Mover com velocity
         
-        /*
         if(Input.GetKey(KeyCode.LeftShift))
         {
             // Correr
@@ -50,10 +49,12 @@ public class Player : MonoBehaviour
 
             rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
         }
-        */
 
         #endregion
 
+        #region Mover com force
+
+        /*
         velocidadeAtual = rb.velocity;
 
         // Desacelerar
@@ -88,5 +89,8 @@ public class Player : MonoBehaviour
                 rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
             }
         }
+        */
+
+        #endregion
     }
 }
