@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
     private float speedRun;
     [SerializeField]
     private float jumpForce;
+    [SerializeField]
+    private float dashForce;
 
     [Header("Controllers")]
     [SerializeField]
@@ -24,10 +26,15 @@ public class Player : MonoBehaviour
     private float gravity;
     private Vector2 velocidadeAtual;
     
-    [SerializeField]
+    private float timerDash;
+    private float dashCooldown;
+    private float dashingDuration;
+
     private bool canClimb;
-    private bool isGrounded;
+    private bool canDash;
     private bool isClimbing;
+    private bool isDashing;
+    private bool doubleTapDash;
 
     private Rigidbody2D rb;
 
@@ -36,6 +43,18 @@ public class Player : MonoBehaviour
         speed = 5;
         speedRun = speed * 1.95f;
 
+        jumpForce = 6.5f;
+
+        dashForce = 25f;
+        timerDash = 0.5f;
+        dashCooldown = 1f;
+        dashingDuration = 0.2f;
+
+        isRight = true;
+        canDash = true;
+
+        groundRay = 1.01f;
+
         rb = GetComponent<Rigidbody2D>();
 
         gravity = rb.gravityScale;
@@ -43,16 +62,16 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-        Checkers();
+        BrainController();
 
         Jump();
-        Climb();
     }
 
     void FixedUpdate()
     {
         Mover();
-        //Climb();
+        Climb();
+        Dash();
     }
 
     void Mover()
@@ -61,17 +80,20 @@ public class Player : MonoBehaviour
 
         #region Mover com velocity
         
-        if(Input.GetKey(KeyCode.LeftShift))
+        if(!isDashing)
         {
-            // Correr
+            if(Input.GetKey(KeyCode.LeftShift))
+            {
+                // Correr
 
-            rb.velocity = new Vector2(horizontal * speedRun, rb.velocity.y);
-        }
-        else
-        {
-            // Andar
+                rb.velocity = new Vector2(horizontal * speedRun, rb.velocity.y);
+            }
+            else
+            {
+                // Andar
 
-            rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+                rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
+            }
         }
 
         #endregion
@@ -148,11 +170,89 @@ public class Player : MonoBehaviour
         }
     }
 
+    void Dash()
+    {
+        if(doubleTapDash)
+        {
+            timerDash -= Time.deltaTime;
+
+            if(timerDash <= 0f)
+            {
+                doubleTapDash = false;
+                timerDash = 0.5f;
+            }
+        }
+
+        if(Input.GetKeyDown(KeyCode.Q) && !doubleTapDash)
+        {
+            doubleTapDash = true;
+        }
+        
+        if(Input.GetKeyDown(KeyCode.Q) && doubleTapDash && canDash)
+        {
+            StartCoroutine(Dashing());
+        }
+    }
+
+    IEnumerator Dashing()
+    {
+        isDashing = true;
+        canDash = false;
+
+        if(isRight)
+        {
+            rb.AddForce(Vector2.right * dashForce, ForceMode2D.Impulse);
+        }
+        else if(isLeft)
+        {
+            rb.AddForce(Vector2.left * dashForce, ForceMode2D.Impulse);
+        }
+
+        yield return new WaitForSeconds(dashingDuration);
+
+        isDashing = false;
+
+        yield return new WaitForSeconds(dashCooldown);
+
+        canDash = true;
+    }
+
     #region Controllers
+
+    private bool isGrounded;
+    private bool isRight;
+    private bool isLeft;
+
+    void BrainController()
+    {
+        Checkers();
+        Facing();
+    }
 
     void Checkers()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundRay, groundLayer);
+    }
+
+    void Facing()
+    {
+        // Direita
+        if(horizontal > 0f)
+        {
+            transform.eulerAngles = Vector2.zero;
+
+            isRight = true;
+            isLeft = false;
+        }
+
+        // Esquerda
+        if(horizontal < 0f)
+        {
+            transform.eulerAngles = new Vector2(0f, 180f);
+
+            isRight = false;
+            isLeft = true;
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)

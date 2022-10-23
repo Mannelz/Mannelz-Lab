@@ -364,11 +364,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   jumpForce: 5
+  dashForce: 25
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   groundRay: 1.01
-  canClimb: 0
 --- !u!1 &485328642
 GameObject:
   m_ObjectHideFlags: 0
