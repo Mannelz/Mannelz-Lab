@@ -4,12 +4,25 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [Header("Player Stats")]
     [SerializeField]
     private float speed;
     private float speedRun;
+    [SerializeField]
+    private float jumpForce;
+
+    [Header("Controllers")]
+    [SerializeField]
+    private LayerMask groundLayer;
+    [SerializeField]
+    private float groundRay;
+
+    //     
 
     private float horizontal;
     private Vector2 velocidadeAtual;
+    
+    private bool isGrounded;
 
     private Rigidbody2D rb;
 
@@ -23,7 +36,9 @@ public class Player : MonoBehaviour
 
     void Update()
     {
-
+        Checkers();
+        
+        Jump();
     }
 
     void FixedUpdate()
@@ -93,4 +108,27 @@ public class Player : MonoBehaviour
 
         #endregion
     }
+
+    void Jump()
+    {
+        if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+        }
+    }
+
+    #region Controllers
+
+    void Checkers()
+    {
+        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundRay, groundLayer);
+    }
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(transform.position, Vector2.down * groundRay);
+    }
+
+    #endregion
 }

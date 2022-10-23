@@ -362,7 +362,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69639ac90927fa949a5f3a699f3cce8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 0
+  speed: 5
+  jumpForce: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  groundRay: 1.01
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -493,7 +498,7 @@ GameObject:
   - component: {fileID: 1817925075}
   - component: {fileID: 1817925074}
   - component: {fileID: 1817925076}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
