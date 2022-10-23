@@ -20,9 +20,14 @@ public class Player : MonoBehaviour
     //     
 
     private float horizontal;
+    private float vertical;
+    private float gravity;
     private Vector2 velocidadeAtual;
     
+    [SerializeField]
+    private bool canClimb;
     private bool isGrounded;
+    private bool isClimbing;
 
     private Rigidbody2D rb;
 
@@ -32,18 +37,22 @@ public class Player : MonoBehaviour
         speedRun = speed * 1.95f;
 
         rb = GetComponent<Rigidbody2D>();
+
+        gravity = rb.gravityScale;
     }
 
     void Update()
     {
         Checkers();
-        
+
         Jump();
+        Climb();
     }
 
     void FixedUpdate()
     {
         Mover();
+        //Climb();
     }
 
     void Mover()
@@ -117,11 +126,49 @@ public class Player : MonoBehaviour
         }
     }
 
+    void Climb()
+    {
+        vertical = Input.GetAxis("Vertical");
+
+        if(!isClimbing)
+        {
+            rb.gravityScale = gravity;
+        }
+
+        if(canClimb && (vertical != 0f || !isGrounded))
+        {
+            isClimbing = true;
+            rb.gravityScale = 0f;
+
+            rb.velocity = new Vector2(rb.velocity.x, vertical * speed);
+        }
+        else
+        {
+            isClimbing = false;
+        }
+    }
+
     #region Controllers
 
     void Checkers()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundRay, groundLayer);
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if(col.gameObject.CompareTag("Ledders"))
+        {
+            canClimb = true;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if(col.gameObject.CompareTag("Ledders"))
+        {
+            canClimb = false;
+        }
     }
 
     void OnDrawGizmos()
