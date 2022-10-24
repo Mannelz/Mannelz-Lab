@@ -24,7 +24,6 @@ public class Player : MonoBehaviour
     private float horizontal;
     private float vertical;
     private float gravity;
-    private Vector2 velocidadeAtual;
     
     private float timerDash;
     private float dashCooldown;
@@ -77,8 +76,6 @@ public class Player : MonoBehaviour
     void Mover()
     {
         horizontal = Input.GetAxis("Horizontal");
-
-        #region Mover com velocity
         
         if(!isDashing)
         {
@@ -95,49 +92,6 @@ public class Player : MonoBehaviour
                 rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
             }
         }
-
-        #endregion
-
-        #region Mover com force
-
-        /*
-        velocidadeAtual = rb.velocity;
-
-        // Desacelerar
-        if(horizontal == 0f)
-        {
-            rb.velocity = new Vector2(Mathf.Lerp(velocidadeAtual.x, 0f, 1f), rb.velocity.y);
-        }
-
-        if(Input.GetKey(KeyCode.LeftShift))
-        {
-            // Correr
-
-            if(Mathf.Abs(velocidadeAtual.x) <= speedRun)
-            {
-                rb.AddForce(new Vector2(horizontal * speedRun, rb.velocity.y), ForceMode2D.Force);
-            }
-            else
-            {
-                rb.velocity = new Vector2(horizontal * speedRun, rb.velocity.y);
-            }
-        }
-        else
-        {
-            // Andar
-
-            if(Mathf.Abs(velocidadeAtual.x) <= speed)
-            {
-                rb.AddForce(new Vector2(horizontal * speed, rb.velocity.y), ForceMode2D.Force);
-            }
-            else
-            {
-                rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-            }
-        }
-        */
-
-        #endregion
     }
 
     void Jump()
@@ -257,7 +211,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D col)
     {
-        if(col.gameObject.CompareTag("Ledders"))
+        if(col.gameObject.CompareTag("Scalable"))
         {
             canClimb = true;
         }
@@ -265,7 +219,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D col)
     {
-        if(col.gameObject.CompareTag("Ledders"))
+        if(col.gameObject.CompareTag("Scalable"))
         {
             canClimb = false;
         }
@@ -273,7 +227,7 @@ public class Player : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
+        Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, Vector2.down * groundRay);
     }
 
