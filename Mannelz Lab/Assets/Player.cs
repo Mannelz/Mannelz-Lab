@@ -25,12 +25,16 @@ public class Player : MonoBehaviour
     private float vertical;
     private float gravity;
     
-    private float timerDash;
+    private float jumpTime;
+    private float jumpTimer;
+    private float dashTime;
+    private float dashTimer;
     private float dashCooldown;
     private float dashingDuration;
 
     private bool canClimb;
     private bool canDash;
+    private bool isJumping;
     private bool isClimbing;
     private bool isDashing;
     private bool doubleTapDash;
@@ -43,9 +47,10 @@ public class Player : MonoBehaviour
         speedRun = speed * 1.95f;
 
         jumpForce = 6.5f;
+        jumpTime = 0.3f;
 
         dashForce = 25f;
-        timerDash = 0.5f;
+        dashTime = 0.5f;
         dashCooldown = 1f;
         dashingDuration = 0.2f;
 
@@ -98,7 +103,29 @@ public class Player : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            jumpTimer = jumpTime;
+            isJumping = true;
+        
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+        }
+
+        if(Input.GetKey(KeyCode.Space) && isJumping)
+        {
+            if(jumpTimer > 0)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+
+                jumpTimer -= Time.deltaTime;
+            }
+            else
+            {
+                isJumping = false;
+            }
+        }
+
+        if(Input.GetKeyUp(KeyCode.Space))
+        {
+            isJumping = false;
         }
     }
 
@@ -128,12 +155,12 @@ public class Player : MonoBehaviour
     {
         if(doubleTapDash)
         {
-            timerDash -= Time.deltaTime;
+            dashTimer -= Time.deltaTime;
 
-            if(timerDash <= 0f)
+            if(dashTimer < 0f)
             {
                 doubleTapDash = false;
-                timerDash = 0.5f;
+                dashTimer = dashTime;
             }
         }
 
