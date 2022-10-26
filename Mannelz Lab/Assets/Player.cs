@@ -101,7 +101,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if(Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if(Input.GetKeyDown(KeyCode.Space) && coyoteTimer > 0f)
         {
             jumpTimer = jumpTime;
             isJumping = true;
@@ -200,6 +200,9 @@ public class Player : MonoBehaviour
 
     #region Controllers
 
+    private float coyoteTime = 0.2f;
+    private float coyoteTimer = 0.2f;
+
     private bool isGrounded;
     private bool isRight;
     private bool isLeft;
@@ -208,6 +211,7 @@ public class Player : MonoBehaviour
     {
         Checkers();
         Facing();
+        CoyoteTime();
     }
 
     void Checkers()
@@ -233,6 +237,18 @@ public class Player : MonoBehaviour
 
             isRight = false;
             isLeft = true;
+        }
+    }
+
+    void CoyoteTime()
+    {
+        if(isGrounded)
+        {
+            coyoteTimer = coyoteTime;
+        }
+        else
+        {
+            coyoteTimer -= Time.deltaTime;
         }
     }
 
