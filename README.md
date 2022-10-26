@@ -5,6 +5,8 @@
 ## Features adicionadas 🎮 (até o momento)
 
 * Movimentação
-* Pulo
+* Pulo variável
 * Dash
 * Escalar
+* Coyote time
+* Jump Buffer
