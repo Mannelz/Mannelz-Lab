@@ -101,8 +101,9 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        if(Input.GetKeyDown(KeyCode.Space) && coyoteTimer > 0f)
+        if(jumpBufferTimer >= 0f && coyoteTimer > 0f)
         {
+            jumpBufferTimer = 0f;
             jumpTimer = jumpTime;
             isJumping = true;
         
@@ -202,6 +203,8 @@ public class Player : MonoBehaviour
 
     private float coyoteTime = 0.2f;
     private float coyoteTimer = 0.2f;
+    private float jumpBufferTime = 0.5f;
+    private float jumpBufferTimer = 0.5f;
 
     private bool isGrounded;
     private bool isRight;
@@ -212,6 +215,7 @@ public class Player : MonoBehaviour
         Checkers();
         Facing();
         CoyoteTime();
+        JumpBuffer();
     }
 
     void Checkers()
@@ -249,6 +253,18 @@ public class Player : MonoBehaviour
         else
         {
             coyoteTimer -= Time.deltaTime;
+        }
+    }
+
+    void JumpBuffer()
+    {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpBufferTimer = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferTimer -= Time.deltaTime;
         }
     }
 
