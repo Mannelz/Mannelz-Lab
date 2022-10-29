@@ -9,8 +9,11 @@ public class Player : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float dashForce;
+    [SerializeField] private float slideSpeed;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private float groundRay;
+    [SerializeField] private Vector3 wallOffset;
+    [SerializeField] private float wallRay;
 
     // ----- Variaveis Player ----- //
     
@@ -26,12 +29,14 @@ public class Player : MonoBehaviour
 
     private bool isRight;
     private bool isLeft;
-    private bool isGrounded;    
+    private bool isGrounded;
+    private bool hasWall;    
     private bool canClimb;
     private bool canDash;
     private bool isJumping;
     private bool isClimbing;
     private bool isDashing;
+    private bool isSliding;
     private bool doubleTapDash;
     
     // ----- Timers ----- //
@@ -86,7 +91,7 @@ public class Player : MonoBehaviour
 
     void Mover()
     {
-        horizontal = Input.GetAxis("Horizontal");
+        horizontal = Input.GetAxisRaw("Horizontal");
         
         if(!isDashing)
         {
@@ -203,7 +208,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(dashCooldown);
 
         canDash = true;
-    }
+    } 
 
     void BrainController()
     {
@@ -211,11 +216,14 @@ public class Player : MonoBehaviour
         Facing();
         CoyoteTime();
         JumpBuffer();
+        WallSlide();
     }
 
     void Checkers()
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundRay, groundLayer);
+
+        hasWall = Physics2D.OverlapCircle(transform.position + wallOffset, wallRay, groundLayer) || Physics2D.OverlapCircle(transform.position - wallOffset, wallRay, groundLayer);
     }
 
     void Facing()
@@ -263,6 +271,26 @@ public class Player : MonoBehaviour
         }
     }
 
+    void WallSlide()
+    {
+        if(hasWall && !isGrounded && rb.velocity.y < 0f && horizontal != 0f)
+        {
+            isSliding = true;
+        }
+        else
+        {
+            isSliding = false;
+        }
+
+        if(isSliding)
+        {
+            if(rb.velocity.y < -slideSpeed)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, -slideSpeed);
+            }
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D col)
     {
         if(col.gameObject.CompareTag("Scalable"))
@@ -281,7 +309,11 @@ public class Player : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        Gizmos.color = Color.blue;
+
         Gizmos.DrawRay(transform.position, Vector2.down * groundRay);
+
+        Gizmos.DrawWireSphere(transform.position + wallOffset, wallRay);
+        Gizmos.DrawWireSphere(transform.position - wallOffset, wallRay);
     }
 }
