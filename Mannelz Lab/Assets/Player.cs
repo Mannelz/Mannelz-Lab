@@ -4,40 +4,48 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Player Stats")]
-    [SerializeField]
-    private float speed;
-    private float speedRun;
-    [SerializeField]
-    private float jumpForce;
-    [SerializeField]
-    private float dashForce;
+    // ----- Variaveis serializadas ----- //
 
-    [Header("Controllers")]
-    [SerializeField]
-    private LayerMask groundLayer;
-    [SerializeField]
-    private float groundRay;
+    [SerializeField] private float speed;
+    [SerializeField] private float jumpForce;
+    [SerializeField] private float dashForce;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private float groundRay;
 
-    //     
-
-    private float horizontal;
-    private float vertical;
-    private float gravity;
+    // ----- Variaveis Player ----- //
     
-    private float jumpTime;
-    private float jumpTimer;
-    private float dashTime;
-    private float dashTimer;
+    private float speedRun;
     private float dashCooldown;
     private float dashingDuration;
 
+    // ----- Controls ----- //
+    
+    private float horizontal;
+    private float vertical;
+    private float gravity;
+
+    private bool isRight;
+    private bool isLeft;
+    private bool isGrounded;    
     private bool canClimb;
     private bool canDash;
     private bool isJumping;
     private bool isClimbing;
     private bool isDashing;
     private bool doubleTapDash;
+    
+    // ----- Timers ----- //
+    
+    private float jumpTime = 0.3f;
+    private float jumpTimer = 0.3f;
+    private float dashTime = 0.5f;
+    private float dashTimer = 0.5f;
+    private float coyoteTime = 0.2f;
+    private float coyoteTimer = 0.2f;
+    private float jumpBufferTime = 0.5f;
+    private float jumpBufferTimer = 0.5f;
+
+    // ----- Components ----- //   
 
     private Rigidbody2D rb;
 
@@ -47,10 +55,8 @@ public class Player : MonoBehaviour
         speedRun = speed * 1.95f;
 
         jumpForce = 6.5f;
-        jumpTime = 0.3f;
 
         dashForce = 25f;
-        dashTime = 0.5f;
         dashCooldown = 1f;
         dashingDuration = 0.2f;
 
@@ -199,17 +205,6 @@ public class Player : MonoBehaviour
         canDash = true;
     }
 
-    #region Controllers
-
-    private float coyoteTime = 0.2f;
-    private float coyoteTimer = 0.2f;
-    private float jumpBufferTime = 0.5f;
-    private float jumpBufferTimer = 0.5f;
-
-    private bool isGrounded;
-    private bool isRight;
-    private bool isLeft;
-
     void BrainController()
     {
         Checkers();
@@ -289,6 +284,4 @@ public class Player : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, Vector2.down * groundRay);
     }
-
-    #endregion
 }
